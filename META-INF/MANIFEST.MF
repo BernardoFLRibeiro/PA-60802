@@ -16,9 +16,11 @@ Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.jdt.core,
  org.eclipse.jdt.core.compiler,
  org.eclipse.jdt.core.dom,
+ org.eclipse.jdt.internal.compiler.ast,
  org.eclipse.jdt.internal.compiler.lookup,
  org.eclipse.jface.text,
  pt.iscte.pidesco.extensibility,
  pt.iscte.pidesco.javaeditor.service,
  pt.iscte.pidesco.projectbrowser.model,
  pt.iscte.pidesco.projectbrowser.service
+Export-Package: pa.iscde.ExtensionPointCodeRefactoring

@@ -1,16 +1,13 @@
 package pa.iscde.codeRefactoring;
 
-import java.awt.TextField;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -24,6 +21,8 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import pa.iscde.ExtensionPointCodeRefactoring.extensionPointrefactoring;
+import pa.iscde.services.refactoringServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
@@ -54,35 +53,22 @@ public class TestView implements PidescoView {
 				super.doubleClick(element);
 			}
 		});
-
+		registService(viewArea);
 		ServiceReference<JavaEditorServices> serviceReference2 = context.getServiceReference(JavaEditorServices.class);
-
 		javaServ = context.getService(serviceReference2);
-
 		Text textBox = new Text(viewArea, 20);
-
 		Button button = new Button(viewArea, SWT.PUSH);
 		button.setText("Field Rename");
-
+		File f = javaServ.getOpenedFile();
 		button.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (!textBox.getText().isEmpty()) {
-					File f = javaServ.getOpenedFile();
 					ITextSelection iText = javaServ.getTextSelected(f);
 					String textSelected = iText.getText();
 					if (!(textSelected.isEmpty()) && !(textSelected.equals(null))) {
-
 						writeinFile(new FieldChecker().run(f, textSelected), iText, textBox.getText());
-
-						/*
-						 * int dialogButton = JOptionPane.YES_NO_OPTION; int dialogResult =
-						 * JOptionPane.showConfirmDialog(null, "Quer Trocar o textSelected pelo Y?",
-						 * "Warning", dialogButton); if (dialogResult == JOptionPane.YES_OPTION) {
-						 * 
-						 * }
-						 */
 					}
 				}
 			}
@@ -91,42 +77,41 @@ public class TestView implements PidescoView {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
 	}
 
-	private void writeinFile(ArrayList<Node> list, ITextSelection iText, String text) {
-		System.out.println("Select: " + iText.getText() + " : " + text);
+	private void registService(Composite area) {
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		IConfigurationElement[] elements = reg.getConfigurationElementsFor("trabalho.extensionPointCRefactoring");
+		for (IConfigurationElement e : elements) {
+			try {
+				extensionPointrefactoring action = (extensionPointrefactoring) e.createExecutableExtension("class");
+
+				action.run(area);
+
+			} catch (CoreException e1) {
+				e1.printStackTrace();
+			}
+
+		}
+	}
+
+	private void writeinFile(ArrayList<Nodeobject> list, ITextSelection iText, String text) {
 		int diff = 0;
 		boolean first = true;
-
-		for (Node n : list) {
-			System.out.println(n.getLine());
+		for (Nodeobject n : list) {
 			if (!first) {
 				diff = diff + text.length() - iText.getText().length();
 			}
-			int numberLine = n.getLine();
-			int startPosition = n.getNode().getStartPosition();
+			int numberLine = n.getLineNumber();
+			int startPosition = n.getstartPosition();
 			int position = startPosition + numberLine - 1;
+			// System.out.println(n.getLineNumber() + " || " + n.getline() + " || " +
+			// n.getstartPosition());
 			javaServ.insertText(javaServ.getOpenedFile(), text, position + diff, iText.getLength());
 			first = false;
-			System.out.println("inseri");
 		}
 
 		javaServ.saveFile(javaServ.getOpenedFile());
 	}
 
-//	static class PrintVisitor implements JavaFileVisitor {
-//		public boolean visitPackage(String packageName) {
-//			System.out.print(packageName);
-//			System.out.println("");
-//
-//			return true;
-//		}
-//
-//		public void visit(Class<?> clazz) {
-//			System.out.print(clazz.getSimpleName());
-//			System.out.println("");
-//		}
-//
-//	}
 }
