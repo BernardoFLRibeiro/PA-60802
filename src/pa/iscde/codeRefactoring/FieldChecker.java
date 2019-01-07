@@ -104,22 +104,16 @@ public class FieldChecker {
 			String name = node.getName().toString();
 			class AssignVisitor extends ASTVisitor {
 
-				// (composite e imagemap)
-				@Override
-				public boolean visit(SingleVariableDeclaration node) {
-
-					return super.visit(node);
-				}
-
 				// visits assignments (=, +=, etc)
 				@Override
 				public boolean visit(Assignment node) {
 					String varName = node.getLeftHandSide().toString();
+
 					String left = node.getLeftHandSide().toString().replaceAll("this.", "");
 					if (checkName(left)) {
 						int diff = 0;
-						if (left.length() != varName.length()) {
-							// diff = 5;
+						if (node.getLeftHandSide().toString().contains("this.")) {
+							diff = 5;
 						}
 
 						addNode(node.toString(), sourceLine(node.getLeftHandSide()),
@@ -161,14 +155,13 @@ public class FieldChecker {
 			if (checkName(temp)) {
 				addNode(node.toString(), sourceLine(node), node.getExpression().getStartPosition());
 			}
+
 			return super.visit(node);
 		}
 
 		public boolean visit(SingleVariableDeclaration node) {
-
 			String temp = node.getName().toString();
 			if (checkName(temp)) {
-				System.out.println(temp);
 				addNode(temp, sourceLine(node), node.getName().getStartPosition());
 			}
 			return true;

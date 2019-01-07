@@ -105,6 +105,7 @@ public class TestView implements PidescoView {
 			int numberLine = n.getLineNumber();
 			int startPosition = n.getstartPosition();
 			int position = startPosition + numberLine - 1;
+
 			// System.out.println(n.getLineNumber() + " || " + n.getline() + " || " +
 			// n.getstartPosition());
 			javaServ.insertText(javaServ.getOpenedFile(), text, position + diff, iText.getLength());
