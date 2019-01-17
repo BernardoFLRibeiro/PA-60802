@@ -3,18 +3,12 @@ package pa.iscde.codeRefactoring;
 public class Nodeobject {
 
 	private int lineNumber, startPosition;
-	private String line;
 
-	public Nodeobject(String line, int lineNumber, int startPosition) {
-		this.line = line;
+	public Nodeobject(int lineNumber, int startPosition) {
 		this.lineNumber = lineNumber;
 		this.startPosition = startPosition;
 	}
 
-	public String getline() {
-		return line;
-	}
-	
 	public int getstartPosition() {
 		return startPosition;
 	}

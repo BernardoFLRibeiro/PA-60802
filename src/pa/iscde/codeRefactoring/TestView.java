@@ -2,6 +2,8 @@ package pa.iscde.codeRefactoring;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -96,18 +98,27 @@ public class TestView implements PidescoView {
 	}
 
 	private void writeinFile(ArrayList<Nodeobject> list, ITextSelection iText, String text) {
+		Collections.sort(list, new Comparator<Nodeobject>() {
+		 
+
+			@Override
+			public int compare(Nodeobject arg0, Nodeobject arg1) {
+				// TODO Auto-generated method stub
+				return arg0.getLineNumber() - arg1.getLineNumber();
+			}
+		});
+		
+		
 		int diff = 0;
+		int itextLength = iText.getText().length();
+		int textLength = text.length();
 		boolean first = true;
 		for (Nodeobject n : list) {
 			if (!first) {
-				diff = diff + text.length() - iText.getText().length();
+				diff = diff + textLength - itextLength;
 			}
-			int numberLine = n.getLineNumber();
-			int startPosition = n.getstartPosition();
-			int position = startPosition + numberLine - 1;
+			int position = n.getstartPosition() + n.getLineNumber() - 1;
 
-			// System.out.println(n.getLineNumber() + " || " + n.getline() + " || " +
-			// n.getstartPosition());
 			javaServ.insertText(javaServ.getOpenedFile(), text, position + diff, iText.getLength());
 			first = false;
 		}
