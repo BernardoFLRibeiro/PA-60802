@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -14,6 +15,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 
 import pa.iscde.ExtensionPointCodeRefactoring.extensionPointrefactoring;
@@ -36,19 +38,48 @@ public class TestView implements PidescoView {
 				super.doubleClick(element);
 			}
 		});
+
 		registService(viewArea);
 
-		Text textBox = new Text(viewArea, 20);
-		Button button = new Button(viewArea, SWT.PUSH);
-		button.setText("Field Rename");
 
+		Label labelRename = new Label(viewArea, 0);
+		labelRename.setText("Rename");
+
+		Text textBox = new Text(viewArea, 20);
+
+		Button button = new Button(viewArea, SWT.PUSH);
+		button.setText("GO");
 		button.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (!textBox.getText().isEmpty()) {
-					Activator.getRefService().rename(textBox.getText());
+
+				ITextSelection iText = Activator.getJavaEditorServices()
+						.getTextSelected(Activator.getJavaEditorServices().getOpenedFile());
+				String textSelected = iText.getText();
+
+				boolean iTextisValid = (!(textSelected.isEmpty()) && !(textSelected.equals(null)));
+				boolean textisNotEmpty = !(textBox.getText().isEmpty());
+				String error = "";
+				
+				if (textisNotEmpty) {
+					if (iTextisValid) {
+						Activator.getRefService().rename(textBox.getText());
+					} else {
+						error = "Não selecionou corretamente!";
+					}
+				} else {
+					error = "Não escreveu uma palavra!";
+
 				}
+
+				if (!(error.isEmpty())) {
+					MessageBox box = new MessageBox(viewArea.getShell(), SWT.OK);
+					box.setText("Error");
+					box.setMessage(error);
+					box.open();
+				}
+
 			}
 
 			@Override

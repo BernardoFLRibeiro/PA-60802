@@ -1,6 +1,5 @@
 package pa.iscde.services;
 
-import org.eclipse.jface.text.ITextSelection;
 
 public interface refactoringServices {
 

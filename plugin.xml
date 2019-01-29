@@ -4,7 +4,7 @@
    <extension-point id="extensionPointCRefactoring" name="extensionPointCRefactoring" schema="schema/extensionPointCRefactoring.exsd"/>
    <extension
          id="id1"
-         name="name"
+         name="RefactorArea"
          point="pt.iscte.pidesco.view">
       <view
             class="pa.iscde.codeRefactoring.TestView"
